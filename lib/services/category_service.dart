@@ -3,8 +3,10 @@
 import 'dart:convert';
 
 import 'package:appproducts/models/models.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontspring/services/auth_service.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -141,5 +143,53 @@ class CategoryService extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
     return category;
+  }
+
+  getProductsfilter(String id) async {
+    String? token = await AuthService().readToken();
+
+    final url = Uri.http(_baseUrl, 'api/user/categories/$id/products');
+
+    isLoading = true;
+    notifyListeners();
+    final resp = await http.get(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    final List<dynamic> decodedResp = json.decode(resp.body);
+
+    List<Product> productList = decodedResp
+        .map((e) => Product(
+              id: e['id'],
+              name: e['name'],
+              description: e['description'],
+              price: e['price'],
+              idCategory: e['idCategory'],
+            ))
+        .toList();
+
+    productos = productList;
+    isLoading = false;
+    notifyListeners();
+    return productos;
+  }
+
+  Future addFav(String id) async {
+    String? token = await AuthService().readToken();
+
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.http(_baseUrl, '/api/user/addFav/$id');
+
+    final resp = await http.post(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    print(resp.statusCode);
+
+    if (resp.statusCode == 200) {}
   }
 }
