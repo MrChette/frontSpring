@@ -136,7 +136,7 @@ class _RegisterForm extends StatelessWidget with InputValidationMixin {
                         customToast('Usuario creado', context);
                         Navigator.pushReplacementNamed(context, 'login');
                       } else {
-                        customToast('El usuario no esta activo', context);
+                        customToast('El usuario ya esta registrado', context);
                         Navigator.pushReplacementNamed(context, 'register');
                         //mostrar error en pantalla
                         // customToast('The email is already registered', context);

@@ -4,8 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontspring/services/verify_service.dart';
-
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
@@ -47,7 +45,7 @@ class AuthService extends ChangeNotifier {
 
   Future<String?> login(String username, String password) async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://192.168.1.140:8080/login'));
+        'POST', Uri.parse('http://192.168.131.208:8080/login'));
 
     request.fields['username'] = username;
     request.fields['password'] = password;

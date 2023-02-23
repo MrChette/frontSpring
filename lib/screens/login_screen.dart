@@ -81,9 +81,9 @@ class _LoginForm extends StatelessWidget {
                 prefixIcon: Icons.lock_outline),
             onChanged: (value) => loginForm.password = value,
             validator: (value) {
-              return (value != null && value.length >= 2)
+              return (value != null && value.length >= 5)
                   ? null
-                  : 'La contraseña debe de ser de 2 caracteres';
+                  : 'La contraseña debe de ser mayor de 5 caracteres';
             },
           ),
           const SizedBox(height: 30),
@@ -114,7 +114,8 @@ class _LoginForm extends StatelessWidget {
 
                     if (spliter?[0] == '200') {
                       if (spliter?[2] == 'true') {
-                        customToast('Existe', context);
+                        customToast('Logeado', context);
+                        Navigator.pushReplacementNamed(context, 'products');
                       } else {
                         customToast('El usuario no esta activo', context);
                         Navigator.pushReplacementNamed(context, 'login');

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontspring/screens/login_screen.dart';
+import 'package:frontspring/screens/product_screen.dart';
 import 'package:frontspring/screens/register_screen.dart';
 import 'package:frontspring/services/auth_service.dart';
 import 'package:frontspring/services/verify_service.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         routes: {
           'login': (_) => const LoginScreen(),
           'register': (_) => const RegisterScreen(),
+          'products': (_) => const ProductScreen(),
         });
   }
 }
