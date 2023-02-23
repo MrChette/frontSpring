@@ -38,6 +38,8 @@ dependencies:
   flutter_slidable: ^2.0.0
   cool_alert: ^1.1.0
   getwidget: ^2.0.4
+  material: ^1.0.0+2
+  popover: ^0.2.8+1
 
 
 dev_dependencies:

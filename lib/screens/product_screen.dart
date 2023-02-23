@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/button/gf_icon_button.dart';
 import 'package:provider/provider.dart';
@@ -80,182 +82,169 @@ class _ProductScreenState extends State<ProductScreen> {
       itemCount: articles.length,
       itemBuilder: (BuildContext context, index) {
         return SizedBox(
-            height: 200,
-            child: Card(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              color: Color(0xFFF5F5F5),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('${productos[index].id}',
-                            style: const TextStyle(fontSize: 20)),
-                        Text(
-                          productos[index].name,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        Text(
-                          productos[index].description,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        Text(
-                          'Price : ${productos[index].price}',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    ),
+          height: 200,
+          child: Card(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            color: Color(0xFFF5F5F5),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${productos[index].id}',
+                          style: const TextStyle(fontSize: 20)),
+                      Text(
+                        productos[index].name,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        productos[index].description,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        'Price : ${productos[index].price}',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GFIconButton(
-                          onPressed: () {
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Delete Product'),
-                                content: const Text('Are you sure?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('No'),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GFIconButton(
+                        onPressed: () {
+                          String name = '${productos[index].name}' ?? '';
+                          String description =
+                              '${productos[index].description}' ?? '';
+                          String price = '${productos[index].price}' ?? '';
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              // return object of type Dialog
+                              return AlertDialog(
+                                title: const Text("Modify Product"),
+                                content: SizedBox(
+                                  height: 150,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        initialValue: name,
+                                        onChanged: (String textTyped) {
+                                          setState(() {
+                                            name = textTyped;
+                                          });
+                                        },
+                                        keyboardType: TextInputType.text,
+                                        decoration: const InputDecoration(
+                                            hintText: 'Name'),
+                                      ),
+                                      TextFormField(
+                                        initialValue: description,
+                                        onChanged: (String textTyped) {
+                                          setState(() {
+                                            description = textTyped;
+                                          });
+                                        },
+                                        keyboardType: TextInputType.text,
+                                        decoration: const InputDecoration(
+                                            hintText: 'Description'),
+                                      ),
+                                      TextFormField(
+                                        initialValue: price,
+                                        onChanged: (String textTyped) {
+                                          setState(() {
+                                            price = textTyped;
+                                          });
+                                        },
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                            hintText: 'Price'),
+                                      ),
+                                    ],
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // productService.deleteProduct(
-                                      //     productos[index].id.toString());
-                                      // setState(() {
-                                      //   productos.removeWhere((element) =>
-                                      //       (element == productos[index]));
-                                      // });
-                                      // Navigator.pop(context);
-                                    },
-                                    child: const Text('Yes'),
+                                ),
+                                actions: <Widget>[
+                                  // usually buttons at the bottom of the dialog
+                                  Row(
+                                    children: <Widget>[
+                                      TextButton(
+                                        child: new Text("Cancel"),
+                                        onPressed: () {
+                                          setState(() {});
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                          onPressed: () {
+                                            productService.modify(
+                                                productos[index].id,
+                                                name,
+                                                description,
+                                                price);
+                                            Navigator.pop(context);
+                                            productos.clear;
+                                            getProducts();
+                                          },
+                                          child: new Text("OK"))
+                                    ],
                                   ),
                                 ],
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 30,
-                          ),
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 30,
                         ),
-                        GFIconButton(
-                          onPressed: () {
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Delete Product'),
-                                content: const Text('Are you sure?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('No'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // productService.deleteProduct(
-                                      //     productos[index].id.toString());
-                                      // setState(() {
-                                      //   productos.removeWhere((element) =>
-                                      //       (element == productos[index]));
-                                      // });
-                                      // Navigator.pop(context);
-                                    },
-                                    child: const Text('Yes'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.delete_outlined,
-                            color: Colors.white,
-                            size: 30,
-                          ),
+                      ),
+                      GFIconButton(
+                        onPressed: () {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Delete Product'),
+                              content: const Text('Are you sure?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('No'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    productService.deleteProduct(
+                                        productos[index].id.toString());
+                                    setState(() {
+                                      productos.removeWhere((element) =>
+                                          (element == productos[index]));
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Yes'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.delete_outlined,
+                          color: Colors.white,
+                          size: 30,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-
-            // Card(
-            //   elevation: 20,
-            //   child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //       children: [
-            //         Text('${productos[index].id}',
-            //             style: const TextStyle(fontSize: 20)),
-            //         Text(
-            //           productos[index].name,
-            //           style: const TextStyle(fontSize: 20),
-            //         ),
-            //         Text(
-            //           productos[index].description,
-            //           style: const TextStyle(fontSize: 20),
-            //         ),
-            //         Text(
-            //           'Price : ${productos[index].price}',
-            //           style: const TextStyle(fontSize: 20),
-            //         ),
-            //         const Divider(color: Colors.black),
-            //         Row(
-            //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //           children: [
-            //             const Divider(color: Colors.black),
-            //             GFIconButton(
-            //               onPressed: () {
-            //                 showDialog<String>(
-            //                   context: context,
-            //                   builder: (BuildContext context) => AlertDialog(
-            //                     title: const Text('Delete Product'),
-            //                     content: const Text('Are you sure?'),
-            //                     actions: <Widget>[
-            //                       TextButton(
-            //                         onPressed: () {
-            //                           Navigator.pop(context);
-            //                         },
-            //                         child: const Text('No'),
-            //                       ),
-            //                       TextButton(
-            //                         onPressed: () {
-            //                           // productService.deleteProduct(
-            //                           //     productos[index].id.toString());
-            //                           // setState(() {
-            //                           //   productos.removeWhere((element) =>
-            //                           //       (element == productos[index]));
-            //                           // });
-            //                           // Navigator.pop(context);
-            //                         },
-            //                         child: const Text('Yes'),
-            //                       ),
-            //                     ],
-            //                   ),
-            //                 );
-            //               },
-            //               icon: const Icon(
-            //                 Icons.delete_outlined,
-            //                 color: Colors.white,
-            //                 size: 30,
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ]),
-            // ),
-            );
+                ),
+              ],
+            ),
+          ),
+        );
       },
       separatorBuilder: (BuildContext context, int index) {
         return const Divider();
@@ -263,71 +252,3 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 }
-
-
-// Card(
-//   clipBehavior: Clip.antiAliasWithSaveLayer,
-//   color: Color(0xFFF5F5F5),
-//   child: Row(
-//     mainAxisSize: MainAxisSize.max,
-//     children: [
-//       Expanded(
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Text(
-//               'Hello World',
-//               textAlign: TextAlign.start,
-//               style: FlutterFlowTheme.of(context).bodyText1,
-//             ),
-//             Text(
-//               'Hello World',
-//               textAlign: TextAlign.start,
-//               style: FlutterFlowTheme.of(context).bodyText1,
-//             ),
-//             Text(
-//               'Hello World',
-//               textAlign: TextAlign.start,
-//               style: FlutterFlowTheme.of(context).bodyText1,
-//             ),
-//           ],
-//         ),
-//       ),
-//       Expanded(
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             FlutterFlowIconButton(
-//               borderColor: Colors.transparent,
-//               borderRadius: 30,
-//               borderWidth: 1,
-//               buttonSize: 60,
-//               icon: Icon(
-//                 Icons.add,
-//                 color: FlutterFlowTheme.of(context).primaryText,
-//                 size: 30,
-//               ),
-//               onPressed: () {
-//                 print('IconButton pressed ...');
-//               },
-//             ),
-//             FlutterFlowIconButton(
-//               borderColor: Colors.transparent,
-//               borderRadius: 30,
-//               borderWidth: 1,
-//               buttonSize: 60,
-//               icon: Icon(
-//                 Icons.add,
-//                 color: FlutterFlowTheme.of(context).primaryText,
-//                 size: 30,
-//               ),
-//               onPressed: () {
-//                 print('IconButton pressed ...');
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     ],
-//   ),
-// )

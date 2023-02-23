@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
-  final String _baseUrl = '192.168.131.208:8080';
+  final String _baseUrl = '192.168.1.140:8080';
   final storage = const FlutterSecureStorage();
 
   // Si retornamos algo, es un error, si no, todo bien!
@@ -45,7 +45,7 @@ class AuthService extends ChangeNotifier {
 
   Future<String?> login(String username, String password) async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://192.168.131.208:8080/login'));
+        'POST', Uri.parse('http://192.168.1.140:8080/login'));
 
     request.fields['username'] = username;
     request.fields['password'] = password;
