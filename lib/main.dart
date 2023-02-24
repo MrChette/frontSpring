@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontspring/screens/category_screen.dart';
 import 'package:frontspring/screens/login_screen.dart';
 import 'package:frontspring/screens/product_screen.dart';
 import 'package:frontspring/screens/register_screen.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
           'login': (_) => const LoginScreen(),
           'register': (_) => const RegisterScreen(),
           'products': (_) => const ProductScreen(),
+          'category': (_) => const CategoryScreen(),
         });
   }
 }

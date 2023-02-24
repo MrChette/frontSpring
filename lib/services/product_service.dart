@@ -105,9 +105,9 @@ class ProductService extends ChangeNotifier {
       url,
       headers: {"Authorization": "Bearer $token"},
     );
-
+    isLoading = false;
+    notifyListeners();
     print(resp.statusCode);
-
     if (resp.statusCode == 200) {}
   }
 
@@ -118,7 +118,8 @@ class ProductService extends ChangeNotifier {
     String price,
   ) async {
     String? token = await AuthService().readToken();
-
+    isLoading = true;
+    notifyListeners();
     final Map<String, dynamic> productData = {
       'name': name,
       'description': description,
@@ -126,7 +127,7 @@ class ProductService extends ChangeNotifier {
     };
     print(productData);
     print(json.encode(productData));
-    isLoading = true;
+    isLoading = false;
     notifyListeners();
 
     final url = Uri.http(_baseUrl, '/api/admin/products/$id');
@@ -139,6 +140,8 @@ class ProductService extends ChangeNotifier {
       },
       body: json.encode(productData),
     );
+    isLoading = false;
+    notifyListeners();
 
     print(resp.statusCode);
 
@@ -152,7 +155,8 @@ class ProductService extends ChangeNotifier {
     String price,
   ) async {
     String? token = await AuthService().readToken();
-    isLoading = true;
+    isLoading = false;
+    notifyListeners();
     final Map<String, dynamic> productData = {
       'name': name,
       'description': description,
@@ -161,8 +165,6 @@ class ProductService extends ChangeNotifier {
     };
     print(productData);
     print(json.encode(productData));
-    isLoading = true;
-    notifyListeners();
 
     final url = Uri.http(_baseUrl, '/api/admin/categories/$idCategory/product');
 
@@ -174,7 +176,8 @@ class ProductService extends ChangeNotifier {
       },
       body: json.encode(productData),
     );
-
+    isLoading = false;
+    notifyListeners();
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {}

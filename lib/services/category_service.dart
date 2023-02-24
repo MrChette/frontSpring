@@ -48,7 +48,7 @@ class CategoryService extends ChangeNotifier {
     return categorias;
   }
 
-  Future deleteCategory(String id) async {
+  Future delete(String id) async {
     final url = Uri.http(_baseUrl, '/api/admin/categories/$id');
     String? token = await AuthService().readToken();
     print(url);
@@ -59,9 +59,11 @@ class CategoryService extends ChangeNotifier {
       url,
       headers: {"Authorization": "Bearer $token"},
     );
+    isLoading = false;
+    notifyListeners();
   }
 
-  Future updateCategory(String id, String name, String description) async {
+  Future update(String id, String name, String description) async {
     String? token = await AuthService().readToken();
     print(id);
     print(name);
@@ -88,12 +90,14 @@ class CategoryService extends ChangeNotifier {
         },
         body: encodedFormData);
 
+    isLoading = false;
+    notifyListeners();
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {}
   }
 
-  Future createCategory(String name, String description) async {
+  Future create(String name, String description) async {
     String? token = await AuthService().readToken();
     print(name);
     print(description);
@@ -119,6 +123,8 @@ class CategoryService extends ChangeNotifier {
         },
         body: encodedFormData);
 
+    isLoading = false;
+    notifyListeners();
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {

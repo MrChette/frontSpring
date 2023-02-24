@@ -5,31 +5,19 @@ import 'package:frontspring/models/category_model.dart';
 import 'package:frontspring/services/category_service.dart';
 import 'package:getwidget/components/button/gf_icon_button.dart';
 import 'package:provider/provider.dart';
-import '../models/product_model.dart';
 import '../services/auth_service.dart';
-import '../services/product_service.dart';
 
-class ProductScreen extends StatefulWidget {
-  const ProductScreen({Key? key}) : super(key: key);
+class CategoryScreen extends StatefulWidget {
+  const CategoryScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProductScreen> createState() => _ProductScreenState();
+  State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> {
-  final productService = ProductService();
+class _CategoryScreenState extends State<CategoryScreen> {
   final categoryService = CategoryService();
 
-  List<ProductModel> productos = [];
   List<CategoryModel> categories = [];
-
-  Future getProducts() async {
-    await productService.getListProducts();
-    setState(() {
-      productos.clear();
-      productos = productService.productData;
-    });
-  }
 
   Future getCategories() async {
     await categoryService.getCategories();
@@ -42,7 +30,6 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   void initState() {
     super.initState();
-    getProducts();
     getCategories();
   }
 
@@ -59,7 +46,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Categories'),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.login_outlined),
@@ -68,37 +55,31 @@ class _ProductScreenState extends State<ProductScreen> {
             Navigator.pushReplacementNamed(context, 'login');
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.markunread_mailbox_outlined),
-            onPressed: () {
-              Navigator.of(context).pushNamed('orders');
-            },
-          )
-        ],
       ),
-      body: builListView(context, productos),
+      body: categoryService.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : builListView(context, categories),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart_outlined), label: 'Products'),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Categories'),
         ],
-        currentIndex: 0, //New
+        currentIndex: 1, //New
         onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          int id = 0;
           String name = '';
           String description = '';
-          String price = '';
           showDialog(
             context: context,
             builder: (BuildContext context) {
               // return object of type Dialog
               return AlertDialog(
-                title: const Text("Create Product"),
+                title: const Text("Create Category"),
                 content: SizedBox(
                   height: 230,
                   child: Column(
@@ -124,38 +105,6 @@ class _ProductScreenState extends State<ProductScreen> {
                         decoration:
                             const InputDecoration(hintText: 'Description'),
                       ),
-                      TextFormField(
-                        initialValue: price,
-                        onChanged: (String textTyped) {
-                          setState(() {
-                            price = textTyped;
-                          });
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(hintText: 'Price'),
-                      ),
-                      Container(
-                        width: 300.0,
-                        child: DropdownButtonFormField(
-                          icon: Icon(Icons.keyboard_double_arrow_down_rounded),
-                          hint: const Text('Select a Category'),
-                          iconSize: 40,
-                          items: categories.map((e) {
-                            return DropdownMenuItem(
-                              value: e.id,
-                              child: Text(e.name.toString()),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            id = value ?? 0;
-                          },
-                          validator: (value) {
-                            return (value != null && value != 0)
-                                ? null
-                                : 'Select Category';
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -172,8 +121,8 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            productService.create(id, name, description, price);
-                            getProducts();
+                            categoryService.create(name, description);
+                            getCategories();
                             Navigator.pop(context);
                           },
                           child: new Text("OK"))
@@ -194,10 +143,10 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Widget builListView(BuildContext context, List articles) {
+  Widget builListView(BuildContext context, List categories) {
     return ListView.separated(
       padding: const EdgeInsets.all(30),
-      itemCount: articles.length,
+      itemCount: categories.length,
       itemBuilder: (BuildContext context, index) {
         return SizedBox(
           height: 200,
@@ -211,18 +160,14 @@ class _ProductScreenState extends State<ProductScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${productos[index].id}',
+                      Text('${categories[index].id}',
                           style: const TextStyle(fontSize: 20)),
                       Text(
-                        productos[index].name,
+                        categories[index].name,
                         style: const TextStyle(fontSize: 20),
                       ),
                       Text(
-                        productos[index].description,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        'Price : ${productos[index].price}',
+                        categories[index].description,
                         style: const TextStyle(fontSize: 20),
                       ),
                     ],
@@ -234,16 +179,15 @@ class _ProductScreenState extends State<ProductScreen> {
                     children: [
                       GFIconButton(
                         onPressed: () {
-                          String name = '${productos[index].name}' ?? '';
+                          String name = '${categories[index].name}' ?? '';
                           String description =
-                              '${productos[index].description}' ?? '';
-                          String price = '${productos[index].price}' ?? '';
+                              '${categories[index].description}' ?? '';
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               // return object of type Dialog
                               return AlertDialog(
-                                title: const Text("Modify Product"),
+                                title: const Text("Modify Category"),
                                 content: SizedBox(
                                   height: 150,
                                   child: Column(
@@ -270,17 +214,6 @@ class _ProductScreenState extends State<ProductScreen> {
                                         decoration: const InputDecoration(
                                             hintText: 'Description'),
                                       ),
-                                      TextFormField(
-                                        initialValue: price,
-                                        onChanged: (String textTyped) {
-                                          setState(() {
-                                            price = textTyped;
-                                          });
-                                        },
-                                        keyboardType: TextInputType.number,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Price'),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -297,12 +230,12 @@ class _ProductScreenState extends State<ProductScreen> {
                                       ),
                                       TextButton(
                                           onPressed: () {
-                                            productService.modify(
-                                                productos[index].id,
-                                                name,
-                                                description,
-                                                price);
-                                            getProducts();
+                                            categoryService.update(
+                                              categories[index].id.toString(),
+                                              name,
+                                              description,
+                                            );
+                                            getCategories();
                                             Navigator.pop(context);
                                           },
                                           child: new Text("OK"))
@@ -324,7 +257,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Delete Product'),
+                              title: const Text('Delete Category'),
                               content: const Text('Are you sure?'),
                               actions: <Widget>[
                                 TextButton(
@@ -335,12 +268,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    productService.deleteProduct(
-                                        productos[index].id.toString());
-                                    setState(() {
-                                      productos.removeWhere((element) =>
-                                          (element == productos[index]));
-                                    });
+                                    categoryService.delete(
+                                        categories[index].id.toString());
+                                    getCategories();
                                     Navigator.pop(context);
                                   },
                                   child: const Text('Yes'),
