@@ -111,7 +111,7 @@ class ProductService extends ChangeNotifier {
     if (resp.statusCode == 200) {}
   }
 
-  modify(
+  Future modify(
     int id,
     String name,
     String description,
@@ -132,6 +132,41 @@ class ProductService extends ChangeNotifier {
     final url = Uri.http(_baseUrl, '/api/admin/products/$id');
 
     final resp = await http.put(
+      url,
+      headers: {
+        "content-type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: json.encode(productData),
+    );
+
+    print(resp.statusCode);
+
+    if (resp.statusCode == 200) {}
+  }
+
+  Future create(
+    int idCategory,
+    String name,
+    String description,
+    String price,
+  ) async {
+    String? token = await AuthService().readToken();
+    isLoading = true;
+    final Map<String, dynamic> productData = {
+      'name': name,
+      'description': description,
+      'price': price,
+      'idCategory': idCategory,
+    };
+    print(productData);
+    print(json.encode(productData));
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.http(_baseUrl, '/api/admin/categories/$idCategory/product');
+
+    final resp = await http.post(
       url,
       headers: {
         "content-type": "application/json",

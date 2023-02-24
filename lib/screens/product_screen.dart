@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:frontspring/models/category_model.dart';
+import 'package:frontspring/services/category_service.dart';
 import 'package:getwidget/components/button/gf_icon_button.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
@@ -16,8 +18,10 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   final productService = ProductService();
+  final categoryService = CategoryService();
 
   List<ProductModel> productos = [];
+  List<CategoryModel> categories = [];
 
   Future getProducts() async {
     await productService.getListProducts();
@@ -26,10 +30,18 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
+  Future getCategories() async {
+    await categoryService.getCategories();
+    setState(() {
+      categories = categoryService.categorias;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     getProducts();
+    getCategories();
   }
 
   @override
@@ -72,6 +84,119 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
         currentIndex: 0, //New
         onTap: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          int id = 0;
+          String name = '';
+          String description = '';
+          String price = '';
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // return object of type Dialog
+              return AlertDialog(
+                title: const Text("Create Product"),
+                content: SizedBox(
+                  height: 230,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        initialValue: name,
+                        onChanged: (String textTyped) {
+                          setState(() {
+                            name = textTyped;
+                          });
+                        },
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(hintText: 'Name'),
+                      ),
+                      TextFormField(
+                        initialValue: description,
+                        onChanged: (String textTyped) {
+                          setState(() {
+                            description = textTyped;
+                          });
+                        },
+                        keyboardType: TextInputType.text,
+                        decoration:
+                            const InputDecoration(hintText: 'Description'),
+                      ),
+                      TextFormField(
+                        initialValue: price,
+                        onChanged: (String textTyped) {
+                          setState(() {
+                            price = textTyped;
+                          });
+                        },
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(hintText: 'Price'),
+                      ),
+                      Container(
+                        width: 300.0,
+                        child: DropdownButtonFormField(
+                          icon: Icon(Icons.keyboard_double_arrow_down_rounded),
+                          hint: const Text('Select a Category'),
+                          iconSize: 40,
+                          items: categories.map((e) {
+                            return DropdownMenuItem(
+                              value: e.id,
+                              child: Text(e.name.toString()),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            id = value ?? 0;
+                          },
+                          validator: (value) {
+                            return (value != null && value != 0)
+                                ? null
+                                : 'Select Category';
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  // usually buttons at the bottom of the dialog
+                  Row(
+                    children: <Widget>[
+                      TextButton(
+                        child: new Text("Cancel"),
+                        onPressed: () {
+                          setState(() {});
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            productService.create(id, name, description, price);
+                            print(productService.isLoading);
+                            while (productService.isLoading == false) {
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 50.0,
+                                width: 50.0,
+                              );
+                            }
+                            productos.clear;
+                            getProducts();
+                            Navigator.pop(context);
+                          },
+                          child: new Text("OK"))
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+          // Add your onPressed code here!
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(
+          Icons.add,
+          size: 40,
+        ),
       ),
     );
   }
