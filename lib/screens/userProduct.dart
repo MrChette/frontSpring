@@ -126,15 +126,25 @@ class _userProductScreenState extends State<userProductScreen> {
           icon: const Icon(Icons.keyboard_double_arrow_down_rounded),
           hint: const Text('Select a Category'),
           iconSize: 40,
-          items: categories.map((e) {
-            return DropdownMenuItem(
-              value: e.id,
-              child: Text(e.name.toString()),
-            );
-          }).toList(),
+          items: [
+            DropdownMenuItem(
+              value: 0,
+              child: Text('All Products'),
+            ),
+            ...categories.map((e) {
+              return DropdownMenuItem(
+                value: e.id,
+                child: Text(e.name.toString()),
+              );
+            }).toList(),
+          ],
           onChanged: (value) {
             buttonState = true;
-            getProductsCategory(value.toString());
+            if (value == 0) {
+              getProducts();
+            } else {
+              getProductsCategory(value.toString());
+            }
           },
           validator: (value) {
             return (value != null && value != 0) ? null : 'Select Category';
@@ -142,10 +152,7 @@ class _userProductScreenState extends State<userProductScreen> {
         ),
       ),
       const SizedBox(
-        height: 20,
-      ),
-      const SizedBox(
-        height: 10,
+        height: 30,
       ),
       SizedBox(
         height: MediaQuery.of(context).size.height * 0.60,
