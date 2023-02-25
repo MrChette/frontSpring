@@ -11,6 +11,8 @@ class ProductService extends ChangeNotifier {
   bool isLoading = true;
   List<ProductModel> productData = [];
   List<ProductModel> product = [];
+  List<int> favorites = [];
+
   Future<List> getListProducts() async {
     print("Entrando");
     productData.clear();
@@ -45,7 +47,7 @@ class ProductService extends ChangeNotifier {
     return categoryList;
   }
 
-  getProductsfilter(String id) async {
+  getProductsbyCategory(String id) async {
     String? token = await AuthService().readToken();
 
     final url = Uri.http(_baseUrl, 'api/user/categories/$id/products');
@@ -91,6 +93,47 @@ class ProductService extends ChangeNotifier {
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {}
+  }
+
+  Future delFav(String id) async {
+    String? token = await AuthService().readToken();
+
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.http(_baseUrl, '/api/user/delFav/$id');
+    final resp = await http.post(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    print(resp.statusCode);
+
+    if (resp.statusCode == 200) {}
+  }
+
+  getFav() async {
+    String? token = await AuthService().readToken();
+    favorites.clear();
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.http(_baseUrl, '/api/user/getFavs');
+
+    final resp = await http.get(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+    print("hollaaaa");
+    final List<dynamic> decodedResp = json.decode(resp.body);
+    favorites = decodedResp.cast<int>();
+
+    print(resp.statusCode);
+
+    if (resp.statusCode == 200) {}
+    isLoading = false;
+    notifyListeners();
+    return favorites;
   }
 
   deleteProduct(String id) async {

@@ -51,9 +51,9 @@ class _ProductScreenState extends State<ProductScreen> {
     // ignore: no_leading_underscores_for_local_identifiers
     void _onItemTapped(int index) {
       if (index == 1) {
-        Navigator.pushReplacementNamed(context, 'category');
+        Navigator.pushReplacementNamed(context, 'adminCategory');
       } else {
-        Navigator.pushReplacementNamed(context, 'products');
+        Navigator.pushReplacementNamed(context, 'adminProducts');
       }
     }
 

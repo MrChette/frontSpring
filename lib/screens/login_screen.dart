@@ -109,13 +109,18 @@ class _LoginForm extends StatelessWidget {
                         loginForm.username, loginForm.password);
                     final spliter = data?.split(',');
 
-                    //FALTA COMPROBAR SI ESTA ACTIVADO
                     print(spliter);
-
+                    // Comprobando si existe, si esta activado y el rol que tiene
                     if (spliter?[0] == '200') {
                       if (spliter?[2] == 'true') {
                         customToast('Logeado', context);
-                        Navigator.pushReplacementNamed(context, 'products');
+                        if (spliter?[1] == 'ROLE_ADMIN') {
+                          Navigator.pushReplacementNamed(
+                              context, 'adminProducts');
+                        } else {
+                          Navigator.pushReplacementNamed(
+                              context, 'userProducts');
+                        }
                       } else {
                         customToast('El usuario no esta activo', context);
                         Navigator.pushReplacementNamed(context, 'login');
