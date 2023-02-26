@@ -31,14 +31,14 @@ class AuthService extends ChangeNotifier {
         },
         body: encodedFormData);
 
-    final Map<String, dynamic> decodedResp = json.decode(resp.body);
-    if (resp.statusCode == 200) {
+    if (resp.statusCode == 201) {
+      final Map<String, dynamic> decodedResp = json.decode(resp.body);
       await storage.write(key: 'token', value: decodedResp['token']);
       await storage.write(key: 'id', value: decodedResp['id'].toString());
 
       return (resp.statusCode.toString());
     } else {
-      print('Error al enviar la solicitud');
+      print('Ya existe ese');
       return (resp.statusCode.toString());
     }
   }

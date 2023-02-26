@@ -20,7 +20,7 @@ class CategoryService extends ChangeNotifier {
   String categoria = "";
   final storage = const FlutterSecureStorage();
 
-  getCategories() async {
+  Future getCategories() async {
     String? token = await AuthService().readToken();
 
     final url = Uri.http(_baseUrl, '/api/all/categories');
@@ -59,6 +59,7 @@ class CategoryService extends ChangeNotifier {
       url,
       headers: {"Authorization": "Bearer $token"},
     );
+
     isLoading = false;
     notifyListeners();
   }
@@ -132,7 +133,7 @@ class CategoryService extends ChangeNotifier {
     }
   }
 
-  getCategory(String id) async {
+  Future getCategory(String id) async {
     String? token = await AuthService().readToken();
 
     final url = Uri.http(_baseUrl, '/api/admin/categories/$id');

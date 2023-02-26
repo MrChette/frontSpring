@@ -6,6 +6,8 @@ import 'package:frontspring/screens/product_screen.dart';
 import 'package:frontspring/screens/register_screen.dart';
 import 'package:frontspring/screens/userProduct_screen.dart';
 import 'package:frontspring/services/auth_service.dart';
+import 'package:frontspring/services/category_service.dart';
+import 'package:frontspring/services/product_service.dart';
 import 'package:frontspring/services/verify_service.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +26,14 @@ class AppState extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => VerifyService(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProductService(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CategoryService(),
           lazy: false,
         ),
 

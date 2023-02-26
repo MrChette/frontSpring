@@ -132,11 +132,11 @@ class _RegisterForm extends StatelessWidget with InputValidationMixin {
                         registerForm.password,
                       );
 
-                      if (errorMessage == '200') {
-                        customToast('Usuario creado', context);
+                      if (errorMessage == '201') {
+                        customToast('Usuario creado con exito', context);
                         Navigator.pushReplacementNamed(context, 'login');
                       } else {
-                        customToast('El usuario ya esta registrado', context);
+                        customToast('Este usuario ya existe', context);
                         Navigator.pushReplacementNamed(context, 'register');
                         //mostrar error en pantalla
                         // customToast('The email is already registered', context);

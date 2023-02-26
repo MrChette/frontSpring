@@ -33,9 +33,9 @@ class _userProductScreenState extends State<userProductScreen> {
   }
 
   getProductsCategory(String id) async {
-    productos.clear();
     await productService.getProductsbyCategory(id);
     setState(() {
+      productos.clear();
       productos = productService.product;
     });
   }
@@ -68,13 +68,6 @@ class _userProductScreenState extends State<userProductScreen> {
   @override
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
-    void _onItemTapped(int index) {
-      if (index == 1) {
-        Navigator.pushReplacementNamed(context, 'favProducts');
-      } else {
-        Navigator.pushReplacementNamed(context, 'userProducts');
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -89,28 +82,19 @@ class _userProductScreenState extends State<userProductScreen> {
         ),
       ),
       body: builListView(context, productos),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined), label: 'Products'),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Categories'),
-        ],
-        currentIndex: 0, //New
-        onTap: _onItemTapped,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, 'favProducts');
+        },
+        backgroundColor: Colors.red.shade300,
+        child: const Icon(
+          Icons.favorite_outline_outlined,
+          size: 40,
+        ),
       ),
+      // ),
     );
   }
-  // void _toggleFavorite(ProductModel product) {
-  //   setState(() {
-  //     if (_favorites.contains(product)) {
-  //       _favorites.remove(product);
-  //       product.isFavorite = false;
-  //     } else {
-  //       _favorites.add(product);
-  //       product.isFavorite = true;
-  //     }
-  //   });
-  // }
 
   Widget builListView(BuildContext context, productos) {
     return Column(children: [
@@ -211,52 +195,4 @@ class _userProductScreenState extends State<userProductScreen> {
       )
     ]);
   }
-  // Widget builListView(BuildContext context, List articles) {
-  //   return ListView.separated(
-  //     padding: const EdgeInsets.all(30),
-  //     itemCount: articles.length,
-  //     itemBuilder: (BuildContext context, index) {
-  //       return SizedBox(
-  //         height: 200,
-  //         child: Card(
-  //           clipBehavior: Clip.antiAliasWithSaveLayer,
-  //           color: Color(0xFFF5F5F5),
-  //           child: Row(
-  //             mainAxisSize: MainAxisSize.max,
-  //             children: [
-  //               Expanded(
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Text(
-  //                       productos[index].name,
-  //                       style: const TextStyle(fontSize: 20),
-  //                     ),
-  //                     Text(
-  //                       productos[index].description,
-  //                       style: const TextStyle(fontSize: 20),
-  //                     ),
-  //                     Text(
-  //                       'Price : ${productos[index].price}',
-  //                       style: const TextStyle(fontSize: 20),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               Expanded(
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [],
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //     separatorBuilder: (BuildContext context, int index) {
-  //       return const Divider();
-  //     },
-  //   );
-  // }
 }

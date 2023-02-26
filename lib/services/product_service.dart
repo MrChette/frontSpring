@@ -77,10 +77,10 @@ class ProductService extends ChangeNotifier {
     return product;
   }
 
-  Future addFav(String id) async {
+  addFav(String id) async {
     String? token = await AuthService().readToken();
 
-    isLoading = true;
+    bool _isLoading = true;
     notifyListeners();
 
     final url = Uri.http(_baseUrl, '/api/user/addFav/$id');
@@ -91,11 +91,13 @@ class ProductService extends ChangeNotifier {
     );
 
     print(resp.statusCode);
+    _isLoading = false;
+    notifyListeners();
 
     if (resp.statusCode == 200) {}
   }
 
-  Future delFav(String id) async {
+  delFav(String id) async {
     String? token = await AuthService().readToken();
 
     isLoading = true;
@@ -115,7 +117,7 @@ class ProductService extends ChangeNotifier {
     if (resp.statusCode == 200) {}
   }
 
-  getFav() async {
+  Future getFav() async {
     String? token = await AuthService().readToken();
     favorites.clear();
     isLoading = true;
@@ -140,7 +142,7 @@ class ProductService extends ChangeNotifier {
     return favorites;
   }
 
-  deleteProduct(String id) async {
+  Future deleteProduct(String id) async {
     String? token = await AuthService().readToken();
 
     isLoading = true;

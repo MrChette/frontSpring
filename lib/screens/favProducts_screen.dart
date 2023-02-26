@@ -25,14 +25,13 @@ class _favProductScreenState extends State<favProductScreen> {
 
   Future getProducts() async {
     await productService.getListProducts();
+    productos.clear();
     setState(() {
-      productos.clear();
       productos = productService.productData;
     });
   }
 
   Future getProductModelFav() async {
-    productosFav.clear();
     await productService.getFav();
     await productService.getListProducts();
     List<ProductModel> productosM = productService.productData;
@@ -45,6 +44,7 @@ class _favProductScreenState extends State<favProductScreen> {
       }
     }
     setState(() {
+      productosFav.clear();
       productosFav = pFav;
     });
   }
@@ -69,13 +69,6 @@ class _favProductScreenState extends State<favProductScreen> {
   @override
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
-    void _onItemTapped(int index) {
-      if (index == 1) {
-        Navigator.pushReplacementNamed(context, 'favProducts');
-      } else {
-        Navigator.pushReplacementNamed(context, 'userProducts');
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -90,28 +83,18 @@ class _favProductScreenState extends State<favProductScreen> {
         ),
       ),
       body: builListView(context, productosFav),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined), label: 'Products'),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Favorites'),
-        ],
-        currentIndex: 0, //New
-        onTap: _onItemTapped,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, 'userProducts');
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(
+          Icons.keyboard_return_outlined,
+          size: 40,
+        ),
       ),
     );
   }
-  // void _toggleFavorite(ProductModel product) {
-  //   setState(() {
-  //     if (_favorites.contains(product)) {
-  //       _favorites.remove(product);
-  //       product.isFavorite = false;
-  //     } else {
-  //       _favorites.add(product);
-  //       product.isFavorite = true;
-  //     }
-  //   });
-  // }
 
   Widget builListView(BuildContext context, productos) {
     return SizedBox(
@@ -150,6 +133,8 @@ class _favProductScreenState extends State<favProductScreen> {
                                   productService.addFav(idProducto.toString());
                                   favoritos.add(idProducto);
                                 }
+                                getFavorites();
+                                getProductModelFav();
                               });
                               getFavorites();
                               getProductModelFav();

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:frontspring/models/category_model.dart';
 import 'package:frontspring/services/category_service.dart';
@@ -46,6 +44,208 @@ class _ProductScreenState extends State<ProductScreen> {
     getCategories();
   }
 
+  Widget builListView(BuildContext context, List articles) {
+    return Scaffold(
+        body: productService.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(30),
+                itemCount: articles.length,
+                itemBuilder: (BuildContext context, index) {
+                  return SizedBox(
+                    height: 200,
+                    child: Card(
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      color: Color(0xFFF5F5F5),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('${productos[index].id}',
+                                    style: const TextStyle(fontSize: 20)),
+                                Text(
+                                  productos[index].name,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  productos[index].description,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  'Price : ${productos[index].price}',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GFIconButton(
+                                  onPressed: () {
+                                    String name =
+                                        '${productos[index].name}' ?? '';
+                                    String description =
+                                        '${productos[index].description}' ?? '';
+                                    String price =
+                                        '${productos[index].price}' ?? '';
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        // return object of type Dialog
+                                        return AlertDialog(
+                                          title: const Text("Modify Product"),
+                                          content: SizedBox(
+                                            height: 150,
+                                            child: Column(
+                                              children: [
+                                                TextFormField(
+                                                  initialValue: name,
+                                                  onChanged:
+                                                      (String textTyped) {
+                                                    setState(() {
+                                                      name = textTyped;
+                                                    });
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.text,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          hintText: 'Name'),
+                                                ),
+                                                TextFormField(
+                                                  initialValue: description,
+                                                  onChanged:
+                                                      (String textTyped) {
+                                                    setState(() {
+                                                      description = textTyped;
+                                                    });
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.text,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          hintText:
+                                                              'Description'),
+                                                ),
+                                                TextFormField(
+                                                  initialValue: price,
+                                                  onChanged:
+                                                      (String textTyped) {
+                                                    setState(() {
+                                                      price = textTyped;
+                                                    });
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          hintText: 'Price'),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            // usually buttons at the bottom of the dialog
+                                            Row(
+                                              children: <Widget>[
+                                                TextButton(
+                                                  child: new Text("Cancel"),
+                                                  onPressed: () {
+                                                    setState(() {});
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                    onPressed: () async {
+                                                      productService.modify(
+                                                          productos[index].id,
+                                                          name,
+                                                          description,
+                                                          price);
+                                                      Navigator.pop(context);
+                                                      getProducts();
+                                                    },
+                                                    child: new Text("OK"))
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                GFIconButton(
+                                  color: Colors.red.shade900,
+                                  onPressed: () {
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Delete Product'),
+                                        content: const Text('Are you sure?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('No'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              productService.deleteProduct(
+                                                  productos[index]
+                                                      .id
+                                                      .toString());
+                                              setState(() {
+                                                productos.removeWhere(
+                                                    (element) => (element ==
+                                                        productos[index]));
+                                              });
+
+                                              Navigator.pop(context);
+                                              getProducts();
+                                            },
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete_outlined,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
+              ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
@@ -68,14 +268,6 @@ class _ProductScreenState extends State<ProductScreen> {
             Navigator.pushReplacementNamed(context, 'login');
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.markunread_mailbox_outlined),
-            onPressed: () {
-              Navigator.of(context).pushNamed('orders');
-            },
-          )
-        ],
       ),
       body: builListView(context, productos),
       bottomNavigationBar: BottomNavigationBar(
@@ -171,19 +363,18 @@ class _ProductScreenState extends State<ProductScreen> {
                         },
                       ),
                       TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             productService.create(id, name, description, price);
-                            getProducts();
                             Navigator.pop(context);
+                            getProducts();
                           },
-                          child: new Text("OK"))
+                          child: new Text("Save"))
                     ],
                   ),
                 ],
               );
             },
           );
-          // Add your onPressed code here!
         },
         backgroundColor: Colors.blue,
         child: const Icon(
@@ -191,181 +382,6 @@ class _ProductScreenState extends State<ProductScreen> {
           size: 40,
         ),
       ),
-    );
-  }
-
-  Widget builListView(BuildContext context, List articles) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(30),
-      itemCount: articles.length,
-      itemBuilder: (BuildContext context, index) {
-        return SizedBox(
-          height: 200,
-          child: Card(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            color: Color(0xFFF5F5F5),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${productos[index].id}',
-                          style: const TextStyle(fontSize: 20)),
-                      Text(
-                        productos[index].name,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        productos[index].description,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        'Price : ${productos[index].price}',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GFIconButton(
-                        onPressed: () {
-                          String name = '${productos[index].name}' ?? '';
-                          String description =
-                              '${productos[index].description}' ?? '';
-                          String price = '${productos[index].price}' ?? '';
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              // return object of type Dialog
-                              return AlertDialog(
-                                title: const Text("Modify Product"),
-                                content: SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    children: [
-                                      TextFormField(
-                                        initialValue: name,
-                                        onChanged: (String textTyped) {
-                                          setState(() {
-                                            name = textTyped;
-                                          });
-                                        },
-                                        keyboardType: TextInputType.text,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Name'),
-                                      ),
-                                      TextFormField(
-                                        initialValue: description,
-                                        onChanged: (String textTyped) {
-                                          setState(() {
-                                            description = textTyped;
-                                          });
-                                        },
-                                        keyboardType: TextInputType.text,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Description'),
-                                      ),
-                                      TextFormField(
-                                        initialValue: price,
-                                        onChanged: (String textTyped) {
-                                          setState(() {
-                                            price = textTyped;
-                                          });
-                                        },
-                                        keyboardType: TextInputType.number,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Price'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  // usually buttons at the bottom of the dialog
-                                  Row(
-                                    children: <Widget>[
-                                      TextButton(
-                                        child: new Text("Cancel"),
-                                        onPressed: () {
-                                          setState(() {});
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                          onPressed: () {
-                                            productService.modify(
-                                                productos[index].id,
-                                                name,
-                                                description,
-                                                price);
-                                            getProducts();
-                                            Navigator.pop(context);
-                                          },
-                                          child: new Text("OK"))
-                                    ],
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-                      GFIconButton(
-                        onPressed: () {
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Delete Product'),
-                              content: const Text('Are you sure?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('No'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    productService.deleteProduct(
-                                        productos[index].id.toString());
-                                    setState(() {
-                                      productos.removeWhere((element) =>
-                                          (element == productos[index]));
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Yes'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.delete_outlined,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const Divider();
-      },
     );
   }
 }

@@ -122,8 +122,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       TextButton(
                           onPressed: () {
                             categoryService.create(name, description);
-                            getCategories();
                             Navigator.pop(context);
+                            getCategories();
                           },
                           child: new Text("OK"))
                     ],
@@ -235,8 +235,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                               name,
                                               description,
                                             );
-                                            getCategories();
                                             Navigator.pop(context);
+                                            getCategories();
                                           },
                                           child: new Text("OK"))
                                     ],
@@ -252,7 +252,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           size: 30,
                         ),
                       ),
+                      SizedBox(
+                        height: 30,
+                      ),
                       GFIconButton(
+                        color: Colors.red.shade900,
                         onPressed: () {
                           showDialog<String>(
                             context: context,
@@ -270,8 +274,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                   onPressed: () {
                                     categoryService.delete(
                                         categories[index].id.toString());
-                                    getCategories();
                                     Navigator.pop(context);
+                                    getCategories();
                                   },
                                   child: const Text('Yes'),
                                 ),
