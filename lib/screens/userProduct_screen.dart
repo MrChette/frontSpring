@@ -1,14 +1,11 @@
-import 'dart:ffi';
-
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frontspring/models/category_model.dart';
 import 'package:frontspring/services/category_service.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
 import '../services/auth_service.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../services/product_service.dart';
 
 class userProductScreen extends StatefulWidget {
@@ -73,9 +70,9 @@ class _userProductScreenState extends State<userProductScreen> {
     // ignore: no_leading_underscores_for_local_identifiers
     void _onItemTapped(int index) {
       if (index == 1) {
-        Navigator.pushReplacementNamed(context, 'adminCategory');
+        Navigator.pushReplacementNamed(context, 'favProducts');
       } else {
-        Navigator.pushReplacementNamed(context, 'userProductScreen');
+        Navigator.pushReplacementNamed(context, 'userProducts');
       }
     }
 

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontspring/screens/category_screen.dart';
+import 'package:frontspring/screens/favProducts_screen.dart';
 import 'package:frontspring/screens/login_screen.dart';
 import 'package:frontspring/screens/product_screen.dart';
 import 'package:frontspring/screens/register_screen.dart';
-import 'package:frontspring/screens/userProduct.dart';
+import 'package:frontspring/screens/userProduct_screen.dart';
 import 'package:frontspring/services/auth_service.dart';
 import 'package:frontspring/services/verify_service.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
           'adminProducts': (_) => const ProductScreen(),
           'adminCategory': (_) => const CategoryScreen(),
           'userProducts': (_) => const userProductScreen(),
+          'favProducts': (_) => const favProductScreen(),
         });
   }
 }

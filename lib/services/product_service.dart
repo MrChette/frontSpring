@@ -107,6 +107,9 @@ class ProductService extends ChangeNotifier {
       headers: {"Authorization": "Bearer $token"},
     );
 
+    isLoading = false;
+    notifyListeners();
+
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {}
@@ -128,11 +131,12 @@ class ProductService extends ChangeNotifier {
     final List<dynamic> decodedResp = json.decode(resp.body);
     favorites = decodedResp.cast<int>();
 
+    isLoading = false;
+    notifyListeners();
     print(resp.statusCode);
 
     if (resp.statusCode == 200) {}
-    isLoading = false;
-    notifyListeners();
+
     return favorites;
   }
 
@@ -170,8 +174,6 @@ class ProductService extends ChangeNotifier {
     };
     print(productData);
     print(json.encode(productData));
-    isLoading = false;
-    notifyListeners();
 
     final url = Uri.http(_baseUrl, '/api/admin/products/$id');
 
